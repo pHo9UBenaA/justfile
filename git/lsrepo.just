@@ -4,12 +4,18 @@ opcode *args:
 
     GIT_ROOT="$HOME/Documents/git"
     CODE_ARGS="{{args}}"
+    PARENT_DIR_OPTION=".."
 
     cd "$GIT_ROOT"
     current_path="$GIT_ROOT"
 
     while true; do
         dirs=$(find . -maxdepth 1 -type d ! -name '.' | sed 's|^\./||' | sort)
+
+        # Add parent directory option if not at GIT_ROOT
+        if [ "$current_path" != "$GIT_ROOT" ]; then
+            dirs="$PARENT_DIR_OPTION"$'\n'"$dirs"
+        fi
 
         if [ -z "$dirs" ]; then
             echo "No directories found"
@@ -22,7 +28,7 @@ opcode *args:
             --reverse \
             --border \
             --expect=ctrl-o \
-            --header="Enter: Navigate into directory | Ctrl+O: Open in VS Code")
+            --header="Enter: Navigate into directory | Ctrl+O: Open in VS Code | .. : Go to parent directory")
 
         key=$(echo "$selected" | head -1)
         choice=$(echo "$selected" | tail -1)
@@ -35,6 +41,10 @@ opcode *args:
             echo "🚀 Opening: $current_path/$choice"
             ls -A ${CODE_ARGS} "$current_path/$choice" &
             break
+        elif [ "$choice" = "$PARENT_DIR_OPTION" ]; then
+            # Navigate to parent directory
+            cd ".."
+            current_path=$(dirname "$current_path")
         else
             cd "$choice"
             current_path="$current_path/$choice"
