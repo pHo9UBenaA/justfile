@@ -1,5 +1,5 @@
 # Calculate time gap for work sessions
-# 
+#
 # This tool calculates work time progress against a target:
 # - Shows how much time has elapsed since start
 # - Accounts for break time taken
@@ -37,7 +37,7 @@ timegap START_TIME TARGET_HOURS BREAK_HOURS="0":
 
     # Get current time
     CURRENT_TIME=$(date '+%H:%M')
-    
+
     # Function to convert HH:MM to minutes
     time_to_minutes() {
         local time_str="$1"
@@ -66,30 +66,30 @@ timegap START_TIME TARGET_HOURS BREAK_HOURS="0":
     # Calculate elapsed time
     start_minutes=$(time_to_minutes "$START_TIME")
     current_minutes=$(time_to_minutes "$CURRENT_TIME")
-    
+
     # Handle day boundary (if current time is earlier than start time, assume next day)
     if [ "$current_minutes" -lt "$start_minutes" ]; then
         current_minutes=$((current_minutes + 24 * 60))
     fi
-    
+
     elapsed_minutes=$((current_minutes - start_minutes))
-    
+
     # Convert target and break hours to minutes
     target_minutes=$(hours_to_minutes "$TARGET_HOURS")
     break_minutes=$(hours_to_minutes "$BREAK_HOURS")
-    
+
     # Calculate net work time (elapsed - break)
     net_work_minutes=$((elapsed_minutes - break_minutes))
-    
+
     # Calculate gap (positive = overtime, negative = undertime)
     gap_minutes=$((net_work_minutes - target_minutes))
-    
+
     # Convert times for display
     elapsed_time=$(minutes_to_time "$elapsed_minutes")
     net_work_time=$(minutes_to_time "$net_work_minutes")
     target_time=$(minutes_to_time "$target_minutes")
     break_time=$(minutes_to_time "$break_minutes")
-    
+
     # Display results
     echo "=========================================="
     echo "          Work Time Calculator"
@@ -101,7 +101,7 @@ timegap START_TIME TARGET_HOURS BREAK_HOURS="0":
     echo "Net work time:   $net_work_time"
     echo "Target time:     $target_time"
     echo "=========================================="
-    
+
     if [ "$gap_minutes" -gt 0 ]; then
         gap_time=$(minutes_to_time "$gap_minutes")
         echo "Status:          ✅ OVERTIME by $gap_time"
