@@ -1,3 +1,4 @@
+mod common
 mod lsrepo
 mod opcode
 mod cd
