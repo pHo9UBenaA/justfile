@@ -1,5 +1,6 @@
 mod lsrepo
 mod opcode
+mod cd
 
 # Show usage examples for git module
 example:
