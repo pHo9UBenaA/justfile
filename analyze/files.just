@@ -5,6 +5,11 @@ files TARGET_DIR="." IGNORE="":
 
     TARGET_DIR="{{ TARGET_DIR }}"
     IGNORE="{{ IGNORE }}"
+    
+    # Debug output (comment out for production)
+    # echo "[DEBUG] Running analyze::files" >&2
+    # echo "[DEBUG] TARGET_DIR: $TARGET_DIR" >&2
+    # echo "[DEBUG] IGNORE: $IGNORE" >&2
 
     # Function to build find command with ignore patterns
     build_find_exclude() {
@@ -32,7 +37,11 @@ files TARGET_DIR="." IGNORE="":
     # Function to display file contents
     display_files() {
         local excludes=$(build_find_exclude)
-        eval "find \"$TARGET_DIR\" -type f $excludes | sort" | while read -r file; do
+        # echo "[DEBUG] excludes: $excludes" >&2
+        # echo "[DEBUG] Running: find \"$TARGET_DIR\" -type f $excludes | sort" >&2
+        
+        # Use while loop with process substitution to handle filenames with spaces
+        while IFS= read -r file; do
             if [[ -f "$file" && -r "$file" ]]; then
                 rel_path="${file#$TARGET_DIR/}"
                 echo "================================================"
@@ -44,7 +53,7 @@ files TARGET_DIR="." IGNORE="":
                 echo
                 echo
             fi
-        done
+        done < <(eval "find \"$TARGET_DIR\" -type f $excludes | sort")
     }
 
     display_files
